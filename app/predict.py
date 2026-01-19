@@ -45,7 +45,6 @@ def predict_from_raw(payload: Dict[str, Any]) -> PredictionResult:
     raw_df = pd.json_normalize(payload, sep="_")
     engineered = feature_engineering(raw_df)
 
-    # Drop the target column if it somehow exists (it shouldn't for inference)
     engineered = engineered.drop(columns=[c for c in engineered.columns if c == "target"], errors="ignore")
 
     model, version = load_latest_model()

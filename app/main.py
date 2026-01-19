@@ -36,15 +36,15 @@ class LotteryRequest(BaseModel):
 
 @app.get("/health")
 async def health():
-    return {"I am alive!"}
+    return {"status": "ok"}
 
 @app.post(
     "/predict",
-    response_model=PredictionResult,
+    response_model=PredictionResult | list[PredictionResult],
     summary="Prevê se o próximo concurso irá acumular",
     response_description="Predição, probabilidade, versão do modelo, timestamp",
 )
-async def predict(request: LotteryRequest):
+async def predict(request: LotteryRequest | list[LotteryRequest]):
     """
     **POST** um registro de sorteio.
 
@@ -57,9 +57,11 @@ async def predict(request: LotteryRequest):
     * `timestamp` – indicação de data e hora em que o resultado foi gerado
     """
     try:
-        payload = request.model_dump()
-        result = predict_from_raw(payload)
-        return JSONResponse(content=result.model_dump(mode="json"))
+        requests = request if isinstance(request, list) else [request]
+        results = [predict_from_raw(item.model_dump()) for item in requests]
+        if isinstance(request, list):
+            return JSONResponse(content=[item.model_dump(mode="json") for item in results])
+        return JSONResponse(content=results[0].model_dump(mode="json"))
     except ValidationError as ve:
         raise HTTPException(status_code=422, detail=ve.errors())
     except Exception as exc:
