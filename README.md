@@ -57,13 +57,13 @@ pytest -q
 Build:
 
 ```bash
-docker build -t pier-ml .
+docker build -t loteria-ml .
 ```
 
 Run:
 
 ```bash
-docker run --rm -p 8000:8000 pier-ml
+docker run --rm -p 8000:8000 loteria-ml
 ```
 
 ## Endpoint

@@ -31,5 +31,8 @@ COPY --from=builder /app/data ./data
 # Garantir existência da pasta de modelos
 RUN mkdir -p ./app/model
 
+# Expondo porta
 EXPOSE 8000
+
+# Comando inicial
 CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
